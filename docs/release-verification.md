@@ -115,7 +115,7 @@ they are measurements for the stated runtime, not general estimates.
 
 | Date (UTC) | Commit / notebook blob | Executor | Path exercised | Wall | Outcome |
 |---|---|---|---|---|---|
-__LOCAL_ROW__
+| 2026-09-14 | notebook blob `76c69f4712bb` (commit `60c20ea`, generated at `12b2ef0`; `NOTEBOOK_SOURCE.repository_revision` = `12b2ef0…`) | Local Windows-venv harness (`run_nb_local.py`: nbclient 0.11.0, fresh `python3` kernel, `CUDA_VISIBLE_DEVICES=-1`, `DIMER_NOTEBOOK_CI_PREINSTALLED=1`), Python 3.12.10, torch 2.14.0+cu130, transformers 4.57.6 | Default synthetic path, all 8 code cells: pinned install skipped (pre-installed), `stage_missing_files` fetched all 13 manifest entries (518 MB) from the Hub cache at the pinned revision into the scratch `weights/`, `verify_snapshot` PASS (13 files), `convert` → 630 tokens, `truncated` false, 1 `section_header_level_1` / 3 `text` / 2 `otsl`, 68 OTSL cell tokens, 6 located elements, `evaluation_report` `sample-sanity` (word error rate 0.192, all three `element_count` entries expected = observed), 6 outputs written; a first run of the pre-commit working tree (same code cells, earlier prose) gave identical DocTags in 80.7 s | 78.8 s | PASS — pre-flight only; not promotion evidence |
 
 ### Manual clean-runtime evidence
 
