@@ -7,7 +7,7 @@ date_published: "2025-02-12"
 date_published_source: "Hugging Face Hub repository creation date of the exact hosted checkpoint (`createdAt` 2025-02-12T15:40:33Z, https://huggingface.co/api/models/docling-project/SmolDocling-256M-preview, originally published as ds4sd/SmolDocling-256M-preview); the accompanying paper arXiv:2503.11576 is dated 2025-03-14 and the pinned revision is the Hub's `main` as of 2026-09-14"
 ---
 
-# SmolDocling-256M-preview (DIMER package v0.1.0) — Document Page → DocTags Extraction (Inference)
+# SmolDocling-256M-preview — Document Page → DocTags Extraction (Inference)
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-docling--project%2FSmolDocling--256M--preview-ffcc4d?style=flat)](https://huggingface.co/docling-project/SmolDocling-256M-preview)
 [![Upstream GitHub](https://img.shields.io/badge/Upstream%20GitHub-docling--project%2Fdocling-181717?style=flat&logo=github&logoColor=white)](https://github.com/docling-project/docling)
