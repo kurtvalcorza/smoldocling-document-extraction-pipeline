@@ -2,6 +2,7 @@
 license: cdla-permissive-2.0
 model_card_spec: "1.1"
 pipeline_tag: image-text-to-text
+task: "Others - Document Information Extraction"
 base_model: docling-project/SmolDocling-256M-preview
 date_published: "2025-02-12"
 date_published_source: "Hugging Face Hub repository creation date of the exact hosted checkpoint (`createdAt` 2025-02-12T15:40:33Z, https://huggingface.co/api/models/docling-project/SmolDocling-256M-preview, originally published as ds4sd/SmolDocling-256M-preview); the accompanying paper arXiv:2503.11576 is dated 2025-03-14 and the pinned revision is the Hub's `main` as of 2026-09-14"
