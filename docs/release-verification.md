@@ -109,16 +109,16 @@ Before changing the registry status from `Candidate` to `Release-grade`:
      `word_error_rate` and three `element_count` entries (the inference-only card recorded 0.19 with both tables
      cell-perfect — an observation, not an assertion);
    - Section 6: the empty baseline (CER 1.0 exactly), the constant-transcript baseline (≈ 0.94) and the frozen model's
-     test rates (≈ @P:FROZEN_CER@ CER / @P:FROZEN_WER@ WER in the Tesla T4 build record — @P:FROZEN_READ@) with four hypotheses printed under their references;
+     test rates (≈ 1.439 CER / 2.491 WER in the Tesla T4 build record — the frozen model answers the transcription instruction with almost nothing — 62 of the 140 hypotheses are empty and 100 are three characters or fewer — while 21 lines loop on a digit or a syllable to the 160-token budget (29 truncated), which is how a CER above 1.0 coexists with hypotheses shorter than the references) with four hypotheses printed under their references;
    - Section 7: `pipe.adapt` printing epoch 0 as the frozen model, 28,321,344 trainable of 256,484,928 parameters,
      `first_trainable_layer` 22, and an eight-epoch history with the validation CER falling (build record:
-     @P:VAL_CURVE@, `best_epoch` @P:BEST_EPOCH@);
+     1.600 → 2.254 / 1.904 / 2.289 / 1.815 / 1.129 / 1.068 / 1.024 / 0.871, `best_epoch` 8);
    - Section 8: `pipe.evaluate` on the validation and test splits with the four-way comparison, the hypothesis
      lengths and `outputs/…_evaluation_report.json` written (the cell asserts the adapted test CER is below the frozen
-     one and below 1.0 — @P:ADAPTED_CER@ against @P:FROZEN_CER@ in the build record, WER @P:FROZEN_WER@ →
-     @P:ADAPTED_WER@; the adapted model also clears the constant baseline, reported, not asserted);
+     one and below 1.0 — 0.782 against 1.439 in the build record, WER 2.491 →
+     0.975; the adapted model also clears the constant baseline, reported, not asserted);
    - Section 9: six example panels under `outputs/…_examples/`; the report page converted again by the
-     adapted model with `outputs/…_page_adapted.json` (build record: @P:DRAWING_AFTER@ — a recorded observation,
+     adapted model with `outputs/…_page_adapted.json` (build record: before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — a recorded observation,
      not an assertion); `pipe.save_artifact` writing `outputs/…_adapter/{adapter.safetensors,manifest.json}` (37
      tensors, about 113 MB) and `SmolDoclingPipeline.from_artifact` reloading it with 8/8 identical transcripts on
      eight test lines (the cell asserts it); `outputs/…_result.json` written with `NOTEBOOK_SOURCE`, the model
@@ -150,7 +150,7 @@ stated runtime, not general estimates.
 
 | Date (UTC) | Commit / notebook blob | Executor | Path exercised | Wall | Outcome |
 |---|---|---|---|---|---|
-| 2026-09-20 | package API at `@P:PROBE_SHA@` (pre-flight, not the notebook blob) | Kaggle Tesla T4 script kernel (`kurtvalcorza/dimer-probe-smoldocling-e2e` v1; `torch 2.14.0+cu130`, `transformers 4.57.6`, Python 3.12, `cuda:0`, float32), branch cloned, pins installed, snapshot staged from the Hub | `tests/test_model_backed.py` (@P:MB_RESULT@) and the recipe probe: the eight pinned row groups read over range requests (800 lines, digest match), empty and constant baselines, frozen transcription instruction on the 140 test lines, `adapt(epochs=8, lr=1e-4, batch_size=8)` with validation-CER selection (the DocTags line target), adapted evaluation, artifact round trip | @P:PROBE_WALL@ | @P:PROBE_OUTCOME@ |
+| 2026-09-21 | package API at `7415a38` (pre-flight, not the notebook blob) | Kaggle Tesla T4 script kernel (`kurtvalcorza/dimer-probe-smoldocling-e2e` v1; `torch 2.14.0+cu130`, `transformers 4.57.6`, Python 3.12, `cuda:0`, float32), branch cloned, pins installed, snapshot staged from the Hub | `tests/test_model_backed.py` (7 passed, 19 warnings in 136.42s (0:02:16)) and the recipe probe: the eight pinned row groups read over range requests (800 lines, digest match), empty and constant baselines, frozen transcription instruction on the 140 test lines, `adapt(epochs=8, lr=1e-4, batch_size=8)` with validation-CER selection (the DocTags line target), adapted evaluation, artifact round trip | 1907 s | **PASS** — 7 passed, 19 warnings in 136.42s (0:02:16); the notebook's 8 code cells re-executed through the package API in 1563 s with peak CUDA memory 5.24 GB; the metrics it produced are the ones the notebook run above recorded (same seed, same split, same recipe) |
 | 2026-09-14 | `c81ca57` / `1c51b0de3d6d` (`TASK-INFERENCE`, superseded) | Kaggle CPU (`kurtvalcorza/dimer-nb2-smoldocling-document-extraction` v1) | Default sample path, `Run all` from a fresh interpreter, no repository checkout | 367.9 s | PASSED — 8/8 code cells, 28 files, 518 MB staged; not evidence for the `E2E` blob |
 
 ## Current status
@@ -161,7 +161,7 @@ clean run of the exact candidate blob is recorded above and an integrator promot
 the model-backed suite (6 of 7, the CUDA test skipped) and the Tesla T4 pre-flight of the package API (table above).
 
 Facts a reviewer should weigh: the sample is nineteenth-century French cursive, far outside the checkpoint's rendered-document
-training distribution, which is why the frozen `Convert this page to docling.` instruction sits near the empty baseline (@P:FROZEN_READ@) and why the gain is a
+training distribution, which is why the frozen `Convert this page to docling.` instruction sits near the empty baseline (the frozen model answers the transcription instruction with almost nothing — 62 of the 140 hypotheses are empty and 100 are three characters or fewer — while 21 lines loop on a digit or a syllable to the 160-token budget (29 truncated), which is how a CER above 1.0 coexists with hypotheses shorter than the references) and why the gain is a
 repair of a domain gap, not evidence about other hands or scripts; the rates are uncapped micro
 CER/WER over one crowdsourced transcription and the notebook says so; the 60-line validation split selects the epoch;
 the SigLIP encoder and the connector are frozen, so what they cannot resolve in a 128-px line tiled at 512 px
@@ -169,4 +169,4 @@ stays unread; the decoder that was tuned answers every instruction, and the page
 only evidence about what happened to page conversion. Greedy decoding is deterministic on a fixed device and dtype, but the
 training of eight decoder layers is not bit-reproducible across GPUs, so a Kaggle number a few hundredths off the build
 record is the expected spread, not a finding. The sibling rows on the same split — GOT-OCR 2.0 at 0.759, Florence-2 at 0.797 and
-SmolVLM-500M at @P:SMOLVLM_CER@ CER — are compared in the card.
+SmolVLM-500M at 0.890 CER — are compared in the card.
