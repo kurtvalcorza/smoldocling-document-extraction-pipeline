@@ -120,7 +120,7 @@ Before changing the registry status from `Candidate` to `Release-grade`:
      0.975; the adapted model also cleared the constant baseline there);
    - Section 9: six example panels under `outputs/…_examples/`; the report page converted again by the
      adapted model with `outputs/…_page_adapted.json` (build record: before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — a recorded observation,
-     not an assertion); `pipe.save_artifact` writing `outputs/…_adapter/{adapter.safetensors,manifest.json}` (37
+     not an assertion); `pipe.save_artifact` writing `outputs/…_adapter/{adapter.safetensors,manifest.json}` (73
      tensors, about 113 MB) and `SmolDoclingPipeline.from_artifact` reloading it with 8/8 identical transcripts on
      eight test lines (the cell asserts it); `outputs/…_result.json` written with `NOTEBOOK_SOURCE`, the model
      identity and licence, the snapshot block (`weight_file`, `weight_format`, `weight_sha256`), the `corpus` block,
