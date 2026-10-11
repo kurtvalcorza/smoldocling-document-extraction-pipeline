@@ -157,6 +157,25 @@ stated runtime, not general estimates.
 | 2026-09-21 | package API at `7415a38` (pre-flight, not the notebook blob) | Kaggle Tesla T4 script kernel (`kurtvalcorza/dimer-probe-smoldocling-e2e` v1; `torch 2.14.0+cu130`, `transformers 4.57.6`, Python 3.12, `cuda:0`, float32), branch cloned, pins installed, snapshot staged from the Hub | `tests/test_model_backed.py` (7 passed, 19 warnings in 136.42s (0:02:16)) and the recipe probe: the eight pinned row groups read over range requests (800 lines, digest match), empty and constant baselines, frozen transcription instruction on the 140 test lines, `adapt(epochs=8, lr=1e-4, batch_size=8)` with validation-CER selection (the DocTags line target), adapted evaluation, artifact round trip | 1907 s | **PASS (history only; package API of an earlier revision, not a notebook run)** — 7 passed, 19 warnings in 136.42s (0:02:16); the notebook's 8 code cells re-executed through the package API in 1563 s with peak CUDA memory 5.24 GB; the metrics it produced are the ones the notebook run above recorded (same seed, same split, same recipe) |
 | 2026-09-14 | `c81ca57` / `1c51b0de3d6d` (`TASK-INFERENCE`, superseded) | Kaggle CPU (`kurtvalcorza/dimer-nb2-smoldocling-document-extraction` v1) | Default sample path, `Run all` from a fresh interpreter, no repository checkout | 367.9 s | PASSED — 8/8 code cells, 28 files, 518 MB staged; not evidence for the `E2E` blob |
 
+### Local lock-only drives (not clean-runtime evidence)
+
+Builder pre-flight of the current blob `e3d9e0a51040` (generated at `1ba0fa8`): the notebook's own code cells run in
+order in an IPython shell standing in for the kernel, in WSL Ubuntu x86_64 with the GPU hidden
+(`CUDA_VISIBLE_DEVICES=-1`), so every stage ran on the CPU. The isolated environment was pre-built by the builder
+from `tutorials/requirements-colab.lock.txt` with `--require-hashes` (managed CPython 3.12.12) **minus the 22 CUDA
+packages, with the `+cpu` builds of torch 2.14.0 / torchvision 0.29.0 / torchaudio 2.11.0**, and marked with the lock
+digest, so Section 1 took its reuse path; the full CUDA lock was not installed here (the same lock, byte-identical
+apart from comment lines, built and ran on a Colab T4 in `smolvlm-vision-language-pipeline`). Snapshot fetched from
+the Hub (13 files, re-hashed) with `HF_HUB_DISABLE_XET=1` (the Xet transfer stalled in WSL). Driver-only changes, all
+printed: reduced split sizes, `EPOCHS = 2`, budgets lowered as stated, `RUN_EXPERIMENT = True` with
+`EXPERIMENT_EPOCHS = 2`. Not a supported runtime, not hosted, not the default configuration, and not promotion
+evidence; the numbers below are not the default path's.
+
+| Date (UTC) | Path exercised | Cells | Wall | Printed results |
+|---|---|---|---|---|
+| 2026-10-11 | Default budgets, split 24 / 8 / 12, `EPOCHS = 2` (stopped by the builder during Section 9's adapted page re-conversion, which had run over 60 min on the CPU at the 2048-token budget; the frozen conversion took 40 min) | 11/13 ok before the stop | 7040 s for the 11 cells | Section 5 frozen page: 630 new tokens, page WER 0.192, element counts `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity` (identical to the 2026-09-21 T4 record); Section 7 `started_from: pinned base`, 28,321,344 of 256,484,928 trainable, first layer 22; Section 8 verdicts `adapted_vs_frozen_cer: improved`, `adapted_below_empty_baseline: False`, and the notebook carried on (SDL-M3) |
+| 2026-10-11 | Split 16 / 4 / 8, `EPOCHS = 2`, `PAGE_MAX_NEW_TOKENS = 64`, `LINE_MAX_NEW_TOKENS = 48`, Section 10 on; then Section 1 re-run, then BYOD by `BYOD_PATH` (20 Belfort lines in a folder) through Sections 4 and 6 | 13/13 ok, then 5/5 re-run and BYOD cells ok | 2381 s (13 cells) | Section 10: epoch-0 validation CER default 0.881 = experiment 0.881; `default_exports_unchanged` adapter / evaluation_report / result all `True`; Section 9 reload parity 8/8, adapter 73 tensors, 113,294,224 bytes; Section 1 re-run `reused: True`, `worker_reused: True`, later cells kept their state; BYOD re-run of Section 4: `restored_pinned_base: 73`, adapter `None`, 0 tensors still differing from the base, split 13 / 3 / 4 with the 20-test-line caution, effective minimum 12, so Section 6 scored the frozen model (SDL-M2, SDL-m1) |
+
 ## Current status
 
 **Candidate.** No clean-runtime execution of the current notebook blob is recorded; a hosted one-pass Colab T4 `Run all` of it is **pending**. The 2026-09-21 Kaggle T4 runs above are of earlier blobs and needed a manual restart after the install cell, so they are history only (REL14) and do not satisfy RUN10/REL2; the package-API pre-flight and the superseded TASK-INFERENCE run are history as well. The local lock-only drives are builder pre-flight, not clean-runtime evidence. Static validation (`tools/validate_release_assets.py`), the generator parity check and the offline unit suite pass on the current source, which is necessary but not sufficient. The registry status stays **Candidate** until a reviewer confirms a recorded one-pass run against the blob under review; promotion is not performed by the builder.
