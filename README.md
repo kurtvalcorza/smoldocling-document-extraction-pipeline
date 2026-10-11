@@ -70,7 +70,7 @@ weights/smoldocling-256m-preview/
 
 ## Release status
 
-**Candidate** — a hosted one-pass Colab T4 `Run all` of the current notebook blob is pending. The earlier blob `aaf8fbf0` (committed at `bc77841`) ran on a Kaggle Tesla T4 on 2026-09-21 only after a manual restart after the install cell (11/11 ok, 1730.3 s); that run is history for a superseded blob, not clean-runtime evidence for the current one. The notebook now runs in an isolated hash-locked environment and needs no restart. Static and unit checks — including the standalone generator parity checks — and local lock-only drives are necessary but are not the evidence; the hosted run is. See `docs/release-verification.md` and `STATUS.md`.
+**Candidate** — a one-pass hosted Colab T4 run of the current notebook blob is recorded (2026-10-11, `6c81408`, Colab CLI sequential execution, 13/13 cells, no restart, 1633.5 s); reviewer confirmation, the upload dialog, hosted BYOD and the optional experiment are pending. The earlier blob `aaf8fbf0` (committed at `bc77841`) ran on a Kaggle Tesla T4 on 2026-09-21 only after a manual restart after the install cell (11/11 ok, 1730.3 s); that run is history for a superseded blob, not clean-runtime evidence for the current one. The notebook now runs in an isolated hash-locked environment and needs no restart. Static and unit checks — including the standalone generator parity checks — and local lock-only drives are necessary but are not the evidence; the hosted run is. See `docs/release-verification.md` and `STATUS.md`.
 
 ## Documentation
 
