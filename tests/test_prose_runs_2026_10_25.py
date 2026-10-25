@@ -24,7 +24,8 @@ def test_adapted_cer_is_a_range_not_one_run():
 
 def test_recorded_runs_include_the_2026_10_25_run():
     md = _markdown()
-    assert "`5b9a54dc` and `282a5afd` on 25 October 2026" in md and "`5b9a54dc` and `282a5afd`, 2026-10-25" in md
+    assert "`5b9a54dc` and `282a5afd` on 25 October 2026" in md
+    assert "`5b9a54dc` and `282a5afd`, 2026-10-25" in md
     assert "neither re-run for this revision" not in md
 
 
