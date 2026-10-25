@@ -35,7 +35,7 @@ def test_t83_3_no_cross_row_ranking():
 def test_t83_4_numbers_name_their_run():
     md = _markdown()
     assert "build record" not in md
-    assert "about 25 minutes" in md and "`aaf8fbf0`, 2026-09-21" in md
+    assert "between 26.5 and 27.2 minutes" in md and "`aaf8fbf0`, 2026-09-21" in md
 
 
 def test_t83_5_spec_items():

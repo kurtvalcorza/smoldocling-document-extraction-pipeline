@@ -32,4 +32,4 @@ def test_timings_are_approximate():
     md = _markdown()
     for exact in ("1112.3 s", "163.1 s", "1633.5 s", "1084 s", "157 s", "337 s"):
         assert exact not in md, exact
-    assert "about 18 minutes" in md and "Colab Tesla T4" in md
+    assert "1,103.7 s to 1,129.1 s" in md and "Colab Tesla T4" in md

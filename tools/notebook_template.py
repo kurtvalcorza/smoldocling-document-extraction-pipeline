@@ -85,8 +85,8 @@ TEMPLATE = {
         "scores the held-out lines again, re-runs six held-out lines and the report page with the adapted model, exports the "
         "adapter as safetensors with a manifest, and reloads that artifact into a fresh pipeline to verify transcript "
         "parity. The default path needs no repository clone, no DIMER worker or service, no credential, no upload dialog and "
-        "no configuration edit (NOTEBOOK_SPEC 2.5 §5). On a Colab Tesla T4 the default path takes about 25 minutes "
-        "of cell time, of which the eight epochs take about 18 minutes and scoring the 140 frozen lines under 3 minutes (the hosted Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, and `5b9a54dc`, 2026-10-25); a CUDA runtime is used "
+        "no configuration edit (NOTEBOOK_SPEC 2.5 §5). On a Colab Tesla T4 the recorded runs of the default path took between 26.5 and 27.2 minutes "
+        "of session wall (1,633.5 s, 1,590.8 s and 1,618.9 s), of which the eight epochs took 1,103.7 s to 1,129.1 s and scoring the 140 frozen lines 156.5 s to 163.1 s (the hosted Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, `5b9a54dc` and `282a5afd`, 2026-10-25; yours may differ); a CUDA runtime is used "
         "automatically when present, and **a CPU runtime is not practical for the default path** (greedy decoding of some "
         "800 lines plus 600 cached forwards of a 256M-parameter model)."
     ),
@@ -115,7 +115,7 @@ TEMPLATE = {
         "minutes in cursive — the Belfort-line dataset — far outside the rendered-document distribution the preview was "
         "fine-tuned on [1], and on them the frozen model emits a `<text>` element (or a `<picture>`) whose content is empty, "
         "spaced-out letters or a loop: a character error rate of **1.439** on the 140 held-out lines (the Tesla T4 figure of "
-        "the recorded runs (the Kaggle T4 run of blob `aaf8fbf0`, 2026-09-21, and the Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, and `5b9a54dc`, 2026-10-25, which all printed it; none re-run for this revision)). So the honest question is narrow: does a bounded fine-tuning of the last eight decoder "
+        "the recorded runs (the Kaggle T4 run of blob `aaf8fbf0`, 2026-09-21, and the Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, `5b9a54dc` and `282a5afd`, 2026-10-25, which all printed it)). So the honest question is narrow: does a bounded fine-tuning of the last eight decoder "
         "layers on 600 transcribed lines — trained to emit exactly the DocTags the model already uses for one text element "
         "that fills the image, with the transcript inside it — move the held-out **CER** and **WER** on a line-disjoint test "
         "split past two **non-adapted baselines** and the frozen model, and what does it do to the report page the same "
@@ -374,7 +374,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the recorded run the frozen model used 630 new tokens and got every count right — `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2 — with a page word error rate of 0.192 and the verdict `sample-sanity`. That is a well-converted page, but the counts only show the structure is plausible: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality.</details>'
+                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the recorded runs the frozen model used 630 new tokens and got every count right — `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2 — with a page word error rate of 0.192 and the verdict `sample-sanity`. That is a well-converted page, but the counts only show the structure is plausible: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality.</details>'
             ),
         },
         {
@@ -391,7 +391,7 @@ TEMPLATE = {
                 "line: what corpus statistics buy without reading the image. The **frozen model** is scored by `pipe.evaluate`, "
                 "which converts every line under `DEFAULT_INSTRUCTION` in left-padded batches of `EVAL_BATCH_SIZE` under a "
                 "`LINE_MAX_NEW_TOKENS` budget, strips the DocTags with `doctags_to_text` and scores the text that remains as "
-                "the hypothesis. Expect the frozen model **near the empty baseline**: the recorded runs measured 1.439 "
+                "the hypothesis. The recorded runs put the frozen model **near the empty baseline**: they measured 1.439 "
                 "(hypotheses 0.78 times the reference length — the frozen model answers the transcription instruction with almost nothing — 62 of the 140 hypotheses are empty and 100 are three characters or fewer — while 21 lines loop on a digit or a syllable to the 160-token budget (29 truncated), which is how a CER above 1.0 coexists with hypotheses shorter than the references); read four of them under the "
                 "references, with the DocTags they came from.\n\n"
                 "*Evaluation practice.* **Predict before running:** an empty answer scores CER exactly 1.0. Will the frozen "
@@ -415,7 +415,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                "**What to notice:** the three systems' CER and WER, `hyp_chars` against `ref_chars`, the `truncated` count and the four example lines.\n\n<details><summary>Check your reasoning</summary>Above it. In the recorded run the empty baseline scored CER 1.0 (by construction), the constant-transcript (medoid) baseline 0.944 and the frozen model **1.439** (WER 2.491): worse than saying nothing. Its hypotheses were shorter than the references in total (0.78 times the length) — 62 of the 140 were empty — but 21 lines looped on a digit or a syllable to the 160-token budget, and every extra character is an insertion. An uncapped rate above 1.0 is the signal that a model is generating, not reading.</details>"
+                "**What to notice:** the three systems' CER and WER, `hyp_chars` against `ref_chars`, the `truncated` count and the four example lines.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, above it: the empty baseline scored CER 1.0 (by construction), the constant-transcript (medoid) baseline 0.944 and the frozen model **1.439** (WER 2.491): worse than saying nothing. Its hypotheses were shorter than the references in total (0.78 times the length) — 62 of the 140 were empty — but 21 lines looped on a digit or a syllable to the 160-token budget, and every extra character is an insertion. An uncapped rate above 1.0 is the signal that a model is generating, not reading.</details>"
             ),
         },
         {
@@ -435,8 +435,8 @@ TEMPLATE = {
                 "weight decay at a fixed learning rate, gradient clipping at 1.0, seeded shuffling, no scheduler, no "
                 "augmentation. Epoch 0 records the frozen model's validation rates; every epoch is scored on the 60 validation "
                 "lines, and the epoch with the **lowest validation CER** is kept.\n\n"
-                "Watch the validation CER fall from 1.600 to 0.871 (epoch 8 in the recorded "
-                "runs) while the loss drops from about 1.36 to 0.04: the adapted model's edits still add up to 78 % of the reference characters, and 2 of 140 lines are exact. The three sibling rows "
+                "In the recorded runs the validation CER went from 1.600 to 0.871 (epoch 8) "
+                "while the loss dropped from about 1.36 to 0.04: the adapted model's edits still add up to 78 % of the reference characters, and 2 of 140 lines are exact. The three sibling rows "
                 "on the same split report their own numbers in their own repositories (see the model card); they were not re-run "
                 "or paired with this run.\n\n"
                 "*Core concept.* Every call to `pipe.adapt` starts from the **pinned base**: tensors an earlier call changed are "
@@ -468,7 +468,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** epoch 0 (the frozen model, before any update), the loss column, the validation CER column and `best_epoch`.\n\n<details><summary>Check your reasoning</summary>Still falling. In the recorded run the validation CER went from 1.600 at epoch 0 (the frozen model) to 0.871 at epoch 8, and epoch 8 — the last — was kept; it was still moving between the last epochs (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point. The training loss fell from about 1.36 to 0.04, far faster than the validation CER: a falling loss is not evidence that the model reads better.</details>'
+                '**What to notice:** epoch 0 (the frozen model, before any update), the loss column, the validation CER column and `best_epoch`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, still falling: the validation CER went from 1.600 at epoch 0 (the frozen model) to 0.871 at epoch 8, and epoch 8 — the last — was kept; it was still moving between the last epochs (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point. The training loss fell from about 1.36 to 0.04, far faster than the validation CER: a falling loss is not evidence that the model reads better.</details>'
             ),
         },
         {
@@ -527,14 +527,14 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** the four-way table, the `verdicts` row and the hypothesis-length row.\n\n<details><summary>Check your reasoning</summary>Yes, but it rarely reads a line exactly. In the recorded run the verdict was *improved*: test CER 1.439 → 0.781–0.782 across the recorded runs (read your value in the table printed above) and WER 2.491 → 0.975, below both baselines (1.0 and 0.944), with the hypotheses at 0.85 times the reference length; only 2 of the 140 lines were exact. The model learned to emit transcripts of about the right length in the right DocTags element, but a CER of about 0.78 still means the edits needed to correct it add up to 78 % of the reference characters — a start, far from a finished recogniser, and measured on lines whose writers it may already have seen.</details>'
+                '**What to notice:** the four-way table, the `verdicts` row and the hypothesis-length row.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, yes, but it rarely read a line exactly. The verdict was *improved* in each: test CER 1.439 → 0.781–0.782 across the recorded runs (read your value in the table printed above) and WER 2.491 → 0.975, below both baselines (1.0 and 0.944), with the hypotheses at 0.85 times the reference length; only 2 of the 140 lines were exact. The model learned to emit transcripts of about the right length in the right DocTags element, but a CER of about 0.78 still means the edits needed to correct it add up to 78 % of the reference characters — a start, far from a finished recogniser, and measured on lines whose writers it may already have seen.</details>'
             ),
         },
         {
             "md": (
                 "## 9. Look at the lines, convert the page again, export the adapter and reload it\n\n"
                 "Six held-out lines are written as panels (`outputs/{stem}_examples/`: the line image with the reference, the "
-                "frozen answer and the adapted answer beneath it) so the numbers can be checked by eye: the adapted rows should "
+                "frozen answer and the adapted answer beneath it) so the numbers can be checked by eye: look whether the adapted rows "
                 "carry the cursive the frozen rows left empty or spaced out. The report page from Section 5 is then converted "
                 "again by the adapted model — the decoder that was tuned answers every instruction, so this is a small look at "
                 "what the adaptation did *outside* its corpus: the recorded runs measured before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — one page of "
@@ -603,7 +603,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>No. In the recorded run the adapted model answered the same page with 92 new tokens instead of 630, the heading and both tables vanished (element counts 1/0, 3/1, 2/0) and the page WER rose from 0.192 to 0.709: the decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
+                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, no: the adapted model answered the same page with 92 new tokens instead of 630, the heading and both tables vanished (element counts 1/0, 3/1, 2/0) and the page WER rose from 0.192 to 0.709: the decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
             ),
         },
         {
@@ -615,7 +615,7 @@ TEMPLATE = {
                 "experiment loads its **own** pipeline from the verified snapshot, so it starts from the frozen model and never "
                 "touches the default `pipe`; it writes only to `outputs/{stem}_experiment/`, prints the default and the changed "
                 "run side by side, and checks that the default exports (adapter, evaluation report, result) are byte-identical "
-                "afterwards. It loads a second copy of the model and trains again: expect about 20 minutes on a T4.\n\n"
+                "afterwards. It loads a second copy of the model and trains again (the default run's eight epochs took 1,103.7 s to 1,129.1 s on a T4 in the recorded runs).\n\n"
                 "**Predict:** with half the learning rate and the same eight epochs, will the held-out CER end higher, lower or "
                 "about the same as the default run's? What should epoch 0 of the experiment show?"
             ),
@@ -656,8 +656,8 @@ TEMPLATE = {
             "md": (
                 "**Observe → Explain.** Compare the `test` columns and the two `best_epoch` values.\n\n"
                 "<details><summary>Check your reasoning</summary>Epoch 0 of the experiment must equal epoch 0 of the default run "
-                "(validation CER 1.600 in the recorded run): both are the frozen model, which is what the restart-from-base rule "
-                "guarantees. No experiment run is recorded yet, so the held-out result is yours to explain. The default run's "
+                "(validation CER 1.600 in the recorded runs): both are the frozen model, which is what the restart-from-base rule "
+                "guarantees. The held-out result is yours to explain. The default run's "
                 "validation CER was still falling at its last epoch, so halving the step size most likely leaves the model "
                 "further from convergence after the same eight epochs — a higher CER — unless the default rate was "
                 "overshooting. With 60 validation and 140 test lines, a difference of a few hundredths is within what a "
@@ -718,7 +718,7 @@ TEMPLATE = {
         "cells after it keep working. After a session restart, run from the top.\n"
         "- **Where the environment lives** — Section 1 builds it in a folder named `dimer_isolated_env_<lock digest>` in the working "
         "directory. Set the environment variable `DIMER_ISOLATED_ENV` before Section 1 to build it somewhere else.\n"
-        "- **No GPU / it is very slow** — the default path needs a CUDA runtime in practice (about 25 minutes on a T4, hours "
+        "- **No GPU / it is very slow** — the default path needs a CUDA runtime in practice (26.5 to 27.2 minutes of session wall on a T4 in the recorded runs, hours "
         "on CPU). Choose **Runtime → Change runtime type → T4 GPU** and run all again.\n"
         "- **`FileNotFoundError: snapshot file missing` or a `sha256`/`size` `ValueError` in Section 3** — a staged file is "
         "incomplete or altered: delete it from the snapshot folder Section 3 prints as `weights_dir` and run Section 3 again "
@@ -727,7 +727,7 @@ TEMPLATE = {
         "unreachable. Run Section 4 again (cached row groups are re-hashed); delete `weights/belfort/` if a cached file is "
         "corrupt.\n"
         "- **CUDA out of memory in Section 7 or 10** — set `BATCH_SIZE = 4` in Section 7 and choose **Run after** from "
-        "Section 7 (the numbers will differ a little from the recorded run).\n"
+        "Section 7 (the numbers may differ from the recorded runs).\n"
         "- **BYOD: \"BYOD_PATH … does not exist\"** — the path is relative to the working directory printed in the "
         "message.\n"
         "- **BYOD: \"the upload dialog exists only in Google Colab\"** — on Kaggle or Jupyter, put the zip in the runtime and "
