@@ -1,0 +1,71 @@
+[colab] Parsing notebook '<local-run-dir>/smoldocling_document_extraction_colab_ce00bba_colab-cli-t4.ipynb'...
+[colab] Executing cell 1/13 - Infrastructure: build (or reuse) the isolated environment and route later cells to it...
+{'isolated_environment': '/content/dimer_isolated_env_af2cf4764686', 'reused': False, 'isolated_python': '3.12.12', 'kernel_python': '3.13.16', 'locked_packages': 48, 'setup_seconds': 53}
+{'routed_to': '/content/dimer_isolated_env_af2cf4764686/bin/python', 'worker_pid': 3064, 'worker_reused': False}
+[colab] Executing cell 2/13 - Infrastructure: record the runtime...
+{'notebook_source': {'repository': 'smoldocling-document-extraction-pipeline', 'repository_revision': 'ee850635034331439fad28598c41230b71093bae', 'embedded_module': 'src/smoldocling_document_extraction_pipeline/pipeline.py', 'embedded_modules': ['src/smoldocling_document_extraction_pipeline/pipeline.py', 'src/smoldocling_document_extraction_pipeline/metrics.py', 'src/smoldocling_document_extraction_pipeline/samples.py'], 'module_sha256': '76c2f74d836f189ea75276348b8ecda2ce941d70ca859a53971ff0ff39c49db5', 'generator': 'build_notebook.py/2.2', 'notebook_spec': '2.5'}, 'python': '3.12.12', 'executable': '/content/dimer_isolated_env_af2cf4764686/bin/python', 'torch': '2.14.0+cu130', 'transformers': '4.57.6', 'PIL': '11.3.0', 'cuda': True}
+[colab] Executing cell 3/13 - smoldocling_document_extraction-08...
+[colab] Executing cell 4/13 - smoldocling_document_extraction-10...
+[colab] Executing cell 5/13 - smoldocling_document_extraction-12...
+[colab] Executing cell 6/13 - Infrastructure: stage and digest-verify the pinned snapshot, then load the model...
+{'model_id': 'docling-project/SmolDocling-256M-preview', 'revision': 'ce51f56c4ebe36e0b1c3a55f67b261ba22a50bf8', 'license': 'cdla-permissive-2.0', 'files': 13, 'total_bytes': 517896538}
+{'weights_dir': '/content/weights/smoldocling-256m-preview', 'fetched': ['README.md', 'added_tokens.json', 'chat_template.json', 'config.json', 'generation_config.json', 'merges.txt', 'model.safetensors', 'preprocessor_config.json', 'processor_config.json', 'special_tokens_map.json', 'tokenizer.json', 'tokenizer_config.json', 'vocab.json']}
+{'verified_files': 13, 'revision': 'ce51f56c4ebe36e0b1c3a55f67b261ba22a50bf8'}
+{'device': 'cuda:0', 'source': 'local-snapshot'}
+[colab] Executing cell 7/13 - smoldocling_document_extraction-16...
+{'data_source': 'Belfort-line (test split), first eight parquet row groups @ c4a74bbd39f2 (MIT (Teklia; Belfort municipal council minutes, Zenodo record 8041668; Tarride et al. 2023, https://doi.org/10.1145/3604951.3605517))', 'raw_rows': {'row_groups': 8, 'lines': 800, 'bytes': 42403899, 'seconds': 6.6}, 'splits': {'train': 600, 'validation': 60, 'test': 140}}
+{'train': {'n': 600, 'chars': {'min': 1, 'max': 120, 'total': 24494}, 'words': 4150, 'width': {'min': 145, 'max': 8956}, 'height': {'min': 128, 'max': 128}, 'digest': '64186dce18ca12d3...'}}
+{'validation': {'n': 60, 'chars': {'min': 3, 'max': 98, 'total': 2454}, 'words': 412, 'width': {'min': 306, 'max': 7543}, 'height': {'min': 128, 'max': 128}, 'digest': '5768e17faca8ca13...'}}
+{'test': {'n': 140, 'chars': {'min': 2, 'max': 105, 'total': 6169}, 'words': 1035, 'width': {'min': 197, 'max': 7872}, 'height': {'min': 128, 'max': 128}, 'digest': '0e815da406cccff9...'}}
+{'example': {'id': 'belfort-test-732', 'image': [3773, 128], 'text': 'de subvention. Rapp. M. Birckel.'}}
+{'probe': 'duplicate id', 'rejected': "duplicate id 'same'"}
+{'probe': 'empty transcript', 'rejected': 'records[0]: text has 0 characters after whitespace normalisation; 1..512 are required'}
+{'probe': 'image above the side ceiling', 'rejected': 'records[0]: image side 16385 px > MAX_IMAGE_SIDE 16384'}
+{'probe': 'too small', 'rejected': '3 records; 8..5000 are required'}
+[colab] Executing cell 8/13 - smoldocling_document_extraction-19...
+{'ceilings': {'MIN_IMAGE_SIDE': 16, 'MAX_IMAGE_SIDE': 16384, 'MAX_IMAGE_PIXELS': 16777216, 'MAX_NEW_TOKENS': 8192, 'DEFAULT_MAX_NEW_TOKENS': 2048, 'DEFAULT_LINE_MAX_NEW_TOKENS': 160, 'DECODING': 'greedy', 'INSTRUCTIONS': ['Convert this page to docling.', 'Convert chart to table.', 'Convert formula to LaTeX.', 'Convert code to text.', 'Convert table to OTSL.', "Find all 'text' elements on the page, retrieve all section headers.", 'Detect footer elements on the page.'], 'LINE_DOCTAGS': '<doctag><text><loc_0><loc_0><loc_500><loc_500>{text}</text>\n</doctag>', 'MIN_RECORDS': 8, 'MAX_RECORDS': 5000, 'device': 'cuda:0', 'dtype': 'float32'}}
+{'page': 'synthetic_report_page_850x1100', 'sha256': 'e57ef5522f7ee4cd...', 'manifest_verdict': 'accepted', 'findings': 1}
+Truncation was not explicitly activated but `max_length` is provided a specific value, please use `truncation=True` to explicitly truncate examples to max length. Defaulting to 'longest_first' truncation strategy. If you encode pairs of sequences (GLUE-style) with the tokenizer you can select this strategy more precisely by providing a specific strategy to `truncation`.
+{'frozen': {'seconds': 23.571, 'checks': {'doctags_is_text': True, 'greedy_settings': True, 'budget_honoured': True, 'identity_reported': True}, 'new_tokens': 630, 'truncated': False, 'n_elements': 6, 'n_table_cells': 68, 'word_error_rate': 0.192, 'element_counts (expected, observed)': {'section_header_level_1': (1, 1), 'text': (3, 3), 'otsl': (2, 2)}, 'verdict': 'sample-sanity'}}
+Annual Report Regional Results quarterly revenue by region and product line for the fiscal year region and product line for the fiscal year with notes line for the fiscal year with notes on methodology quarterly revenue by region and notes on methodology quarterly revenue by region and product line …
+[colab] Executing cell 9/13 - smoldocling_document_extraction-22...
+{'empty_baseline': {'cer': 1.0, 'wer': 1.0, 'cer_macro': 1.0, 'exact_match': 0.0}, 'n': 140, 'note': 'empty string for every line'}
+{'constant_baseline': {'cer': 0.944, 'wer': 0.999, 'cer_macro': 0.952, 'exact_match': 0.0}, 'note': "constant training transcript 'idem'"}
+/content/dimer_isolated_env_af2cf4764686/lib/python3.12/site-packages/transformers/tokenization_utils_base.py:2919: UserWarning: `max_length` is ignored when `padding`=`True` and there is no truncation strategy. To pad to max length, use `padding='max_length'`.
+  warnings.warn(
+{'frozen_model_test': {'cer': 1.439, 'wer': 2.491, 'cer_macro': 1.392, 'exact_match': 0.0}, 'n': 140, 'ref_chars': 6169, 'hyp_chars': 4839, 'truncated': 29, 'verdict': 'measured', 'seconds': 155.8}
+{'definitions': {'cer': 'character error rate, micro: total character edits (insertions + deletions + substitutions) over total reference characters; 0 is perfect, values above 1 mean over-generation', 'wer': 'word error rate, micro: total word edits over total reference words after lower-casing and whitespace tokenisation; punctuation kept', 'cer_macro': 'mean of the per-line character error rates (each line weighted equally regardless of length)', 'wer_macro': 'mean of the per-line word error rates', 'exact_match': 'fraction of lines whose hypothesis equals the reference after whitespace normalisation'}}
+{'id': 'belfort-test-761', 'reference': "régulariser l'achat", 'frozen': '', 'doctags': '<doctag><picture><loc_0><loc_0><loc_500><loc_500><other></picture>\n</doctag>'}
+{'id': 'belfort-test-763', 'reference': 'Renvoi à la Commission des travaux de diverses questions', 'frozen': '1', 'doctags': '<doctag><text><loc_0><loc_0><loc_500><loc_500>1</text>\n</doctag>'}
+{'id': 'belfort-test-642', 'reference': 'divers instruments de musique', 'frozen': '', 'doctags': '<doctag><picture><loc_0><loc_0><loc_500><loc_500><other></picture>\n</doctag>'}
+{'id': 'belfort-test-156', 'reference': "Le Maire demande au Conseil s'il y a lieu d'accorder à quelques uns des", 'frozen': 'C', 'doctags': '<doctag><text><loc_0><loc_0><loc_500><loc_500>C</text>\n</doctag>'}
+[colab] Executing cell 10/13 - smoldocling_document_extraction-25...
+{'epoch': 0, 'train_loss': None, 'val_cer': 1.6, 'val_wer': 2.527, 'val_cer_macro': 1.638, 'val_exact_match': 0.0, 'note': 'frozen model'}
+{'epoch': 1, 'train_loss': 1.362, 'val_cer': 2.254, 'val_wer': 3.107, 'val_cer_macro': 2.667, 'val_exact_match': 0.0}
+{'epoch': 2, 'train_loss': 1.0505, 'val_cer': 1.904, 'val_wer': 2.272, 'val_cer_macro': 1.648, 'val_exact_match': 0.0}
+{'epoch': 3, 'train_loss': 0.8535, 'val_cer': 2.289, 'val_wer': 2.609, 'val_cer_macro': 2.692, 'val_exact_match': 0.0}
+{'epoch': 4, 'train_loss': 0.6589, 'val_cer': 1.815, 'val_wer': 2.184, 'val_cer_macro': 1.465, 'val_exact_match': 0.0}
+{'epoch': 5, 'train_loss': 0.4549, 'val_cer': 1.129, 'val_wer': 1.325, 'val_cer_macro': 1.071, 'val_exact_match': 0.0}
+{'epoch': 6, 'train_loss': 0.2637, 'val_cer': 1.068, 'val_wer': 1.216, 'val_cer_macro': 1.758, 'val_exact_match': 0.0}
+{'epoch': 7, 'train_loss': 0.1129, 'val_cer': 1.024, 'val_wer': 1.381, 'val_cer_macro': 1.197, 'val_exact_match': 0.0}
+{'epoch': 8, 'train_loss': 0.0392, 'val_cer': 0.871, 'val_wer': 1.121, 'val_cer_macro': 0.897, 'val_exact_match': 0.017}
+{'instruction': 'Convert this page to docling.', 'target': '<doctag><text><loc_0><loc_0><loc_500><loc_500>{text}</text>\n</doctag>', 'trainable_parameters': 28321344, 'total_parameters': 256484928, 'first_trainable_layer': 22, 'best_epoch': 8, 'selection': 'lowest validation CER', 'loss': 'causal language-model cross-entropy over the assistant turn (the DocTags line target and the end-of-utterance token); image tokens and the user turn masked; computed on the cached frozen-prefix hidden states', 'cache_seconds': 337.757, 'started_from': 'pinned base', 'seconds': 1092.5}
+[colab] Executing cell 11/13 - smoldocling_document_extraction-28...
+{'cer': {'empty': 1.0, 'constant': 0.944, 'frozen': 1.439, 'adapted': 0.782}}
+{'wer': {'empty': 1.0, 'constant': 0.999, 'frozen': 2.491, 'adapted': 0.975}}
+{'cer_macro': {'empty': 1.0, 'constant': 0.952, 'frozen': 1.392, 'adapted': 0.882}}
+{'exact_match': {'empty': 0.0, 'constant': 0.0, 'frozen': 0.0, 'adapted': 0.014}}
+{'delta_vs_frozen': {'cer': -0.657, 'wer': -1.516, 'cer_macro': -0.51, 'exact_match': 0.014}}
+{'hypothesis_length': {'ref_chars': 6169, 'frozen_hyp_chars': 4839, 'adapted_hyp_chars': 5225, 'frozen_truncated': 29, 'adapted_truncated': 2}}
+{'verdicts': {'adapted_vs_frozen_cer': 'improved', 'adapted_below_empty_baseline': True}}
+{'report': 'outputs/smoldocling_document_extraction_evaluation_report.json', 'verdicts': {'adapted_vs_frozen_cer': 'improved', 'adapted_below_empty_baseline': True}, 'adapted_beats_both_baselines': True}
+[colab] Executing cell 12/13 - smoldocling_document_extraction-31...
+{'examples': ['belfort-test-112.png', 'belfort-test-156.png', 'belfort-test-48.png', 'belfort-test-642.png', 'belfort-test-761.png', 'belfort-test-763.png'], 'rows': ['reference', 'frozen answer', 'adapted answer']}
+{'adapted': {'seconds': 4.46, 'checks': {'doctags_is_text': True, 'greedy_settings': True, 'budget_honoured': True, 'identity_reported': True}, 'new_tokens': 92, 'truncated': False, 'n_elements': 1, 'n_table_cells': 0, 'word_error_rate': 0.709, 'element_counts (expected, observed)': {'section_header_level_1': (1, 0), 'text': (3, 1), 'otsl': (2, 0)}, 'verdict': 'sample-sanity'}}
+annual Report Regional Results quarterly revenue by region and product line for the fiscal year region and product line for the fiscal year with notes line for the fiscal year by region and product line by region and product line for the fiscal year quarterly revenue by region and product line for t…
+{'artifact': 'outputs/smoldocling_document_extraction_adapter', 'format': 'org.valcorza.smoldocling-256m-preview.adapter.v1', 'tensors': 73, 'bytes': 113294224, 'sha256': 'ecee89fd59b6d53b...', 'instruction': 'Convert this page to docling.', 'best_epoch': 8}
+{'reload_parity': {'identical_lines': 8, 'of': 8}, 'reloaded_best_epoch': 8}
+['smoldocling_document_extraction_adapter', 'smoldocling_document_extraction_evaluation_report.json', 'smoldocling_document_extraction_example_line.png', 'smoldocling_document_extraction_examples', 'smoldocling_document_extraction_input_manifest.json', 'smoldocling_document_extraction_page_adapted.json', 'smoldocling_document_extraction_page_frozen.json', 'smoldocling_document_extraction_result.json', 'smoldocling_document_extraction_train.csv']
+[colab] Executing cell 13/13 - smoldocling_document_extraction-34...
+{'experiment': 'skipped (RUN_EXPERIMENT = False); the default path above is complete'}
+[colab] Saving notebook with outputs to '<local-run-dir>/smoldocling_document_extraction_colab_ce00bba_colab-cli-t4_output.ipynb'...
