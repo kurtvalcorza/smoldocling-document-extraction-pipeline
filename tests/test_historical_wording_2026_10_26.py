@@ -17,7 +17,8 @@ def _markdown():
 def test_expectations_and_run_status_sentences_are_gone():
     md = _markdown()
     for stale in ("the default path takes about 25 minutes", "none re-run for this revision",
-                  "Expect the frozen model", "expect about 20 minutes on a T4", "No experiment run is recorded yet",
+                  "Expect the frozen model", "expect about 20 minutes on a T4",
+                  "No experiment run is recorded yet", "none re-run for this revision",
                   "the adapted rows should"):
         assert stale not in md, stale
 
