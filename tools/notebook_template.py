@@ -85,8 +85,8 @@ TEMPLATE = {
         "scores the held-out lines again, re-runs six held-out lines and the report page with the adapted model, exports the "
         "adapter as safetensors with a manifest, and reloads that artifact into a fresh pipeline to verify transcript "
         "parity. The default path needs no repository clone, no DIMER worker or service, no credential, no upload dialog and "
-        "no configuration edit (NOTEBOOK_SPEC 2.0 §5). On a Tesla T4 the default path took about 25 minutes "
-        "of cell time (eight epochs 1084 s, frozen scoring of 140 lines 157 s); a CUDA runtime is used "
+        "no configuration edit (NOTEBOOK_SPEC 2.5 §5). On a Colab Tesla T4 the recorded runs of the default path took between 26.5 and 27.2 minutes "
+        "of session wall (1,633.5 s, 1,590.8 s and 1,618.9 s), of which the eight epochs took 1,103.7 s to 1,129.1 s and scoring the 140 frozen lines 156.5 s to 163.1 s (the hosted Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, `5b9a54dc` and `282a5afd`, 2026-10-25; yours may differ); a CUDA runtime is used "
         "automatically when present, and **a CPU runtime is not practical for the default path** (greedy decoding of some "
         "800 lines plus 600 cached forwards of a 256M-parameter model)."
     ),
@@ -113,13 +113,13 @@ TEMPLATE = {
         "What this notebook adds to inference is **adaptation of one instruction on transcribed lines, through the DocTags "
         "output**. The instruction stays `Convert this page to docling.`; the lines are nineteenth-century French council "
         "minutes in cursive — the Belfort-line dataset — far outside the rendered-document distribution the preview was "
-        "trained on, and on them the frozen model emits a `<text>` element (or a `<picture>`) whose content is empty, "
-        "spaced-out letters or a loop: a character error rate of **1.439** on the 140 held-out lines (the build "
-        "record's Tesla T4 figure). So the honest question is narrow: does a bounded fine-tuning of the last eight decoder "
+        "fine-tuned on [1], and on them the frozen model emits a `<text>` element (or a `<picture>`) whose content is empty, "
+        "spaced-out letters or a loop: a character error rate of **1.439** on the 140 held-out lines (the Tesla T4 figure of "
+        "the recorded runs (the Kaggle T4 run of blob `aaf8fbf0`, 2026-09-21, and the Colab T4 runs of blobs `e3d9e0a5`, 2026-10-11, `5b9a54dc` and `282a5afd`, 2026-10-25, which all printed it)). So the honest question is narrow: does a bounded fine-tuning of the last eight decoder "
         "layers on 600 transcribed lines — trained to emit exactly the DocTags the model already uses for one text element "
         "that fills the image, with the transcript inside it — move the held-out **CER** and **WER** on a line-disjoint test "
         "split past two **non-adapted baselines** and the frozen model, and what does it do to the report page the same "
-        "decoder converts? Three sibling rows adapted GOT-OCR 2.0, Florence-2 and SmolVLM-500M on the same split; this is the "
+        "decoder converts? Three sibling rows adapted GOT-OCR 2.0, Florence-2 and SmolVLM-500M on the same split with their own fixed recipes; this is the "
         "fourth model on the same 800 lines, and the only one whose output contract is a document markup. Nothing here is a "
         "claim about your documents or your script: it is one seeded split of one small labelled set.\n\n"
         "**Snapshot note:** the pinned revision ships `model.safetensors` (a 13-file manifest with the tokenizer, chat "
@@ -131,7 +131,7 @@ TEMPLATE = {
     "guided": {
         "opening": [
             (
-                "**Who this notebook is for.** A learner who knows basic Python, has used Colab or Jupyter, and wants to see what a small document-conversion model does with handwriting it was never trained on, how to measure that honestly with character and word error rates, and how to adapt it to a small transcribed set without fooling themselves — including what the adaptation costs elsewhere. No prior experience with SmolDocling, vision–language models or fine-tuning is assumed; each term is explained where it first matters and again in the **Glossary** at the end. A CUDA GPU runtime (T4) is required in practice: the default path takes about 25 minutes there and hours on CPU.\n\n**Input → Model → Output.**\n\n| | Page conversion | Line transcription (scored) | Bounded fine-tuning |\n|---|---|---|---|\n| Input | one page image and one of seven supported instructions | one handwritten line image and `Convert this page to docling.` | transcribed line images (600 training and 60 validation in the sample) |\n| Model | SigLIP vision encoder, pixel-shuffle connector and a 30-layer decoder, greedy decoding | the same model | the last eight decoder layers and the final norm, trained with the causal language-model loss on a DocTags line target; everything else frozen |\n| Output | DocTags markup (elements with `<loc_N>` positions), the text it carries, a `truncated` flag — no score | the text inside the DocTags, scored by CER and WER against the transcript | a 113 MB safetensors adapter, and held-out CER / WER / exact match |\n\n**How to use this notebook.** Choose a GPU runtime (**Runtime → Change runtime type → T4 GPU**), then **Runtime → Run all**. Run all completes in one pass: Section 1 installs nothing into the notebook's own Python, so no restart is needed. Sections 1–3 are **infrastructure** — the isolated environment, the carried package and the model snapshot — and their cells are collapsed; you may run them without studying them. The learning path starts in Section 4. Form fields (`# @param`) are the only values meant to be edited, and the defaults reproduce the recorded run. Before each principal result the notebook asks you to **Predict**; after it come **What to notice** and a collapsible **Check your reasoning** with a worked answer from the recorded run (the Kaggle T4 run of 21 September 2026; another GPU can move the last digits). Section 10 is a **change-one-thing experiment**, off by default. **Troubleshooting**, a **Glossary** and a **Conclusion** template are at the end. Writing your predictions down is optional.\n\n**Roadmap:** 1–3 infrastructure → 4 the Belfort lines, validation and the split *(evaluation practice)* → 5 the inference contract on a rendered report page *(core concept: DocTags)* → 6 two baselines and the frozen model *(evaluation practice)* → 7 bounded fine-tuning *(core concept: what is trained)* → 8 held-out evaluation → 9 the lines by eye, the page again, export and reload *(engineering)* → 10 change one thing (optional) → conclude."
+                "**Who this notebook is for.** A learner who knows basic Python, has used Colab or Jupyter, and wants to see what a small document-conversion model does with handwriting outside its documented training data, how to measure that honestly with character and word error rates, and how to adapt it to a small transcribed set without fooling themselves — including what the adaptation costs elsewhere. No prior experience with SmolDocling, vision–language models or fine-tuning is assumed; each term is explained where it first matters and again in the **Glossary** at the end. A CUDA GPU runtime (T4) is required in practice: the recorded runs of the default path took 26.5 to 27.2 minutes of session wall there, and a CPU run would take hours (an estimate).\n\n**Input → Model → Output.**\n\n| | Page conversion | Line transcription (scored) | Bounded fine-tuning |\n|---|---|---|---|\n| Input | one page image and one of seven supported instructions | one handwritten line image and `Convert this page to docling.` | transcribed line images (600 training and 60 validation in the sample) |\n| Model | SigLIP vision encoder, pixel-shuffle connector and a 30-layer decoder, greedy decoding | the same model | the last eight decoder layers and the final norm, trained with the causal language-model loss on a DocTags line target; everything else frozen |\n| Output | DocTags markup (elements with `<loc_N>` positions), the text it carries, a `truncated` flag — no score | the text inside the DocTags, scored by CER and WER against the transcript | a 113 MB safetensors adapter, and held-out CER / WER / exact match |\n\n**How to use this notebook.** Choose a GPU runtime (**Runtime → Change runtime type → T4 GPU**), then **Runtime → Run all**. Run all completes in one pass: Section 1 installs nothing into the notebook's own Python, so no restart is needed. Sections 1–3 are **infrastructure** — the isolated environment, the carried package and the model snapshot — and their cells are collapsed; you may run them without studying them. The learning path starts in Section 4. Form fields (`# @param`) are the only values meant to be edited, and the defaults reproduce the recorded run. Before each principal result the notebook asks you to **Predict**; after it come **What to notice** and a collapsible **Check your reasoning** with a worked answer from the recorded runs (the Kaggle T4 run of blob `aaf8fbf0`, 21 September 2026, and the Colab T4 runs of blobs `e3d9e0a5` on 11 October 2026 and `5b9a54dc` and `282a5afd` on 25 October 2026). Where those runs agree a worked answer quotes the number; where they differ it gives the observed range — the adapted test CER was 0.782 in the first two and 0.781 in the third — and another GPU can move the last digits. Section 10 is a **change-one-thing experiment**, off by default. **Troubleshooting**, a **Glossary** and a **Conclusion** template are at the end. Writing your predictions down is optional.\n\n**Roadmap:** 1–3 infrastructure → 4 the Belfort lines, validation and the split *(evaluation practice)* → 5 the inference contract on a rendered report page *(core concept: DocTags)* → 6 two baselines and the frozen model *(evaluation practice)* → 7 bounded fine-tuning *(core concept: what is trained)* → 8 held-out evaluation → 9 the lines by eye, the page again, export and reload *(engineering)* → 10 change one thing (optional) → conclude."
             )
         ]
     },
@@ -158,7 +158,13 @@ TEMPLATE = {
     ),
     "prerequisites": [
         "- **Learner:** basic Python and Colab or Jupyter familiarity; no prior experience with SmolDocling, vision–language models or fine-tuning. The notebook explains DocTags and location tokens, the chat template, greedy decoding, micro and macro CER/WER, the medoid baseline, the frozen-prefix cache and the adapter where they are first used; the Glossary repeats them.",
-        "- **Runtime:** a fresh supported **Linux x86_64** runtime with a CUDA GPU (Google Colab or Kaggle GPU). Section 1 builds its own Python 3.12.12 environment from a hash-locked list of manylinux wheels, so the kernel's own Python version does not matter and nothing is installed into it. The default path uses CUDA automatically when present. Generation is batched for the corpus stages — the prompt length varies with the image's tile count, so batches are left-padded — and the build record measured 157 s to score 140 lines and 1084 s for the eight epochs (caching the prefix hidden states for 600 lines took 337 s) on a Tesla T4, about 25 minutes of cell time for the whole path; a CPU runtime would take hours. The pinned `torch==2.14.0` install and the 513 MB checkpoint are the large downloads of the run; the row groups are about 44 MB.",
+        "- **Overlap with the training data:** SmolDocling [1] was fine-tuned from SmolVLM-256M-Instruct on document-conversion "
+        "sets (SynthCodeNet, SynthFormulaNet, SynthChartNet, DoclingMatix; model card), and SmolVLM-256M was trained on The Cauldron "
+        "and Docmatix (model card). None of those cards names the Belfort lines [2] (Zenodo 8041668, public since 2023), and The "
+        "Cauldron's subset list (checked 2026-10-25) does not include them, so no overlap with the test lines is documented; it is "
+        "inferred to be unlikely, not verified, because the PDF-derived sets are not enumerated line by line. The Cauldron does include "
+        "IAM English handwriting lines, so the base has seen some handwriting, though no French cursive is documented.",
+        "- **Runtime:** a fresh supported **Linux x86_64** runtime with a CUDA GPU (Google Colab or Kaggle GPU). Section 1 builds its own Python 3.12.12 environment from a hash-locked list of manylinux wheels, so the kernel's own Python version does not matter and nothing is installed into it. The default path uses CUDA automatically when present. Generation is batched for the corpus stages — the prompt length varies with the image's tile count, so batches are left-padded — and the Kaggle T4 run of an earlier blob (`aaf8fbf0`, 2026-09-21) took under 3 minutes to score 140 lines and about 18 minutes for the eight epochs (caching the prefix hidden states for 600 lines took under 6 minutes), and the Colab T4 runs of blobs `e3d9e0a5` (2026-10-11), `5b9a54dc` and `282a5afd` (2026-10-25) took 156.5 s to 163.1 s to score and 1,103.7 s to 1,129.1 s for the eight epochs, 26.5 to 27.2 minutes of session wall for the whole path; a CPU runtime would take hours (an estimate). The pinned `torch==2.14.0` install and the 513 MB checkpoint are the large downloads of the run; the row groups are about 44 MB.",
         "- **Knowledge:** basic Python and PIL; what a chat template, a user turn and greedy decoding are; what DocTags elements and location tokens are; what character and word error rate measure and why they are not capped at 1; why a self-rendered page is a plumbing check while a held-out split of one labelled set is a measurement of that set only.",
         "- **Data contract:** records are `{id, image, text}` — `image` a PIL image (or a file decodable by Pillow) with sides within 16..16,384 px and at most 4096² pixels, `text` its transcript (1..512 characters after whitespace runs are collapsed; case and punctuation kept). Ids match `[A-Za-z0-9_.:-]{1,64}` and are unique; a dataset needs 8..5,000 records; splitting de-duplicates by decoded pixels so no image lands in two splits. BYOD accepts one zip (or directory) of images plus a `transcripts.csv` in the layout named above; after the split the training split needs eight images and the validation split one, so the effective BYOD minimum is **12 distinct images** (`min_byod_records()` computes it). Images are matched by file name: two images with the same name in different folders are refused, and `__MACOSX` entries, hidden files and non-image files are skipped and listed. Every refusal names the `transcripts.csv` line, the file and the rule.",
         "- **Validation is structural, not semantic:** every image is decoded and every transcript checked for length, but nothing checks that a transcript says what its image shows — a mislabelled set is fine-tuned on without complaint.",
@@ -368,7 +374,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the recorded run the frozen model used 630 new tokens and got every count right — `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2 — with a page word error rate of 0.192 and the verdict `sample-sanity`. That is a well-converted page, but the counts only show the structure is plausible: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality.</details>'
+                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the recorded runs the frozen model used 630 new tokens and got every count right — `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2 — with a page word error rate of 0.192 and the verdict `sample-sanity`. That is a well-converted page, but the counts only show the structure is plausible: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality.</details>'
             ),
         },
         {
@@ -385,11 +391,11 @@ TEMPLATE = {
                 "line: what corpus statistics buy without reading the image. The **frozen model** is scored by `pipe.evaluate`, "
                 "which converts every line under `DEFAULT_INSTRUCTION` in left-padded batches of `EVAL_BATCH_SIZE` under a "
                 "`LINE_MAX_NEW_TOKENS` budget, strips the DocTags with `doctags_to_text` and scores the text that remains as "
-                "the hypothesis. Expect the frozen model **near the empty baseline**: the build record measured 1.439 "
+                "the hypothesis. The recorded runs put the frozen model **near the empty baseline**: they measured 1.439 "
                 "(hypotheses 0.78 times the reference length — the frozen model answers the transcription instruction with almost nothing — 62 of the 140 hypotheses are empty and 100 are three characters or fewer — while 21 lines loop on a digit or a syllable to the 160-token budget (29 truncated), which is how a CER above 1.0 coexists with hypotheses shorter than the references); read four of them under the "
                 "references, with the DocTags they came from.\n\n"
                 "*Evaluation practice.* **Predict before running:** an empty answer scores CER exactly 1.0. Will the frozen "
-                "model — a document converter that has never seen cursive — score below 1.0, near it, or above it? And what "
+                "model — a document converter tuned on rendered pages, whose base saw some English handwriting — score below 1.0, near it, or above it? And what "
                 "would a score *above* 1.0 mean?"
             ),
             "code": (
@@ -409,7 +415,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                "**What to notice:** the three systems' CER and WER, `hyp_chars` against `ref_chars`, the `truncated` count and the four example lines.\n\n<details><summary>Check your reasoning</summary>Above it. In the recorded run the empty baseline scored CER 1.0 (by construction), the constant-transcript (medoid) baseline 0.944 and the frozen model **1.439** (WER 2.491): worse than saying nothing. Its hypotheses were shorter than the references in total (0.78 times the length) — 62 of the 140 were empty — but 21 lines looped on a digit or a syllable to the 160-token budget, and every extra character is an insertion. An uncapped rate above 1.0 is the signal that a model is generating, not reading.</details>"
+                "**What to notice:** the three systems' CER and WER, `hyp_chars` against `ref_chars`, the `truncated` count and the four example lines.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, above it: the empty baseline scored CER 1.0 (by construction), the constant-transcript (medoid) baseline 0.944 and the frozen model **1.439** (WER 2.491): worse than saying nothing. Its hypotheses were shorter than the references in total (0.78 times the length) — 62 of the 140 were empty — but 21 lines looped on a digit or a syllable to the 160-token budget, and every extra character is an insertion. An uncapped rate above 1.0 is the signal that a model is generating, not reading.</details>"
             ),
         },
         {
@@ -429,10 +435,10 @@ TEMPLATE = {
                 "weight decay at a fixed learning rate, gradient clipping at 1.0, seeded shuffling, no scheduler, no "
                 "augmentation. Epoch 0 records the frozen model's validation rates; every epoch is scored on the 60 validation "
                 "lines, and the epoch with the **lowest validation CER** is kept.\n\n"
-                "Watch the validation CER fall from 1.600 to 0.871 (epoch 8 in the build "
-                "record) while the loss drops from about 1.36 to 0.04: the adapted model gets 22 % of the characters right and 2 of 140 lines exact. The three sibling rows "
-                "on the same split — GOT-OCR 2.0 (0.759 CER), Florence-2 (0.797) and SmolVLM-500M (0.890) — are "
-                "compared in the card.\n\n"
+                "In the recorded runs the validation CER went from 1.600 to 0.871 (epoch 8) "
+                "while the loss dropped from about 1.36 to 0.04: the adapted model's edits still add up to 78 % of the reference characters, and 2 of 140 lines are exact. The three sibling rows "
+                "on the same split report their own numbers in their own repositories (see the model card); they were not re-run "
+                "or paired with this run.\n\n"
                 "*Core concept.* Every call to `pipe.adapt` starts from the **pinned base**: tensors an earlier call changed are "
                 "restored first, so epoch 0 is always the frozen model. Re-running this cell with a changed field is a fresh run, "
                 "not continued training — but it replaces the default results that Sections 8 and 9 export; to compare a change "
@@ -462,7 +468,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** epoch 0 (the frozen model, before any update), the loss column, the validation CER column and `best_epoch`.\n\n<details><summary>Check your reasoning</summary>Still falling. In the recorded run the validation CER went from 1.600 at epoch 0 (the frozen model) to 0.871 at epoch 8, and epoch 8 — the last — was kept; it was still moving between the last epochs (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point. The training loss fell from about 1.36 to 0.04, far faster than the validation CER: a falling loss is not evidence that the model reads better.</details>'
+                '**What to notice:** epoch 0 (the frozen model, before any update), the loss column, the validation CER column and `best_epoch`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, still falling: the validation CER went from 1.600 at epoch 0 (the frozen model) to 0.871 at epoch 8, and epoch 8 — the last — was kept; it was still moving between the last epochs (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point. The training loss fell from about 1.36 to 0.04, far faster than the validation CER: a falling loss is not evidence that the model reads better.</details>'
             ),
         },
         {
@@ -470,8 +476,8 @@ TEMPLATE = {
                 "## 8. Held-out evaluation\n\n"
                 "The test lines were never used for training or epoch selection, and no image appears in two splits. The "
                 "adapted model is scored exactly as the frozen model was in Section 6 and the four systems are put side by "
-                "side. Read it in this order: **CER** first (the measure the epoch was selected on — the build record measured "
-                "1.439 → **0.782**, past both baselines), then **WER** (2.491 → 0.975), "
+                "side. Read it in this order: **CER** first (the measure the epoch was selected on — the recorded runs measured "
+                "1.439 → **0.781–0.782** in the table printed below, past both baselines), then **WER** (2.491 → 0.975), "
                 "then the hypothesis length (from 0.78 times the reference length to 0.85), "
                 "then the exact-match rate (2 of the 140 lines read perfectly). The cell reports two **verdicts** — whether the "
                 "adapted CER `improved`, showed `no gain` or got `worse` against the frozen one, and whether it is below the "
@@ -521,17 +527,17 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** the four-way table, the `verdicts` row and the hypothesis-length row.\n\n<details><summary>Check your reasoning</summary>Yes, but it rarely reads a line exactly. In the recorded run the verdict was *improved*: test CER 1.439 → 0.782 and WER 2.491 → 0.975, below both baselines (1.0 and 0.944), with the hypotheses at 0.85 times the reference length; only 2 of the 140 lines were exact. The model learned to emit transcripts of about the right length in the right DocTags element, and gets roughly four characters in five right after edits are counted — useful, far from a finished recogniser, and measured on lines whose writers it may already have seen.</details>'
+                '**What to notice:** the four-way table, the `verdicts` row and the hypothesis-length row.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, yes, but it rarely read a line exactly. The verdict was *improved* in each: test CER 1.439 → 0.781–0.782 across the recorded runs (read your value in the table printed above) and WER 2.491 → 0.975, below both baselines (1.0 and 0.944), with the hypotheses at 0.85 times the reference length; only 2 of the 140 lines were exact. The model learned to emit transcripts of about the right length in the right DocTags element, but a CER of about 0.78 still means the edits needed to correct it add up to 78 % of the reference characters — a start, far from a finished recogniser, and measured on lines whose writers it may already have seen.</details>'
             ),
         },
         {
             "md": (
                 "## 9. Look at the lines, convert the page again, export the adapter and reload it\n\n"
                 "Six held-out lines are written as panels (`outputs/{stem}_examples/`: the line image with the reference, the "
-                "frozen answer and the adapted answer beneath it) so the numbers can be checked by eye: the adapted rows should "
+                "frozen answer and the adapted answer beneath it) so the numbers can be checked by eye: look whether the adapted rows "
                 "carry the cursive the frozen rows left empty or spaced out. The report page from Section 5 is then converted "
                 "again by the adapted model — the decoder that was tuned answers every instruction, so this is a small look at "
-                "what the adaptation did *outside* its corpus: the build record measured before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — one page of "
+                "what the adaptation did *outside* its corpus: the recorded runs measured before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — one page of "
                 "evidence, not a measurement.\n\n"
                 "`pipe.save_artifact` writes the trained tensors — the eight decoder layers and the norm, about 113 MB in "
                 "float32 — as `adapter.safetensors`, with a `manifest.json` recording the artifact format, the base model id and "
@@ -597,7 +603,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>No. In the recorded run the adapted model answered the same page with 92 new tokens instead of 630, the heading and both tables vanished (element counts 1/0, 3/1, 2/0) and the page WER rose from 0.192 to 0.709: the decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
+                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, no: the adapted model answered the same page with 92 new tokens instead of 630, the heading and both tables vanished (element counts 1/0, 3/1, 2/0) and the page WER rose from 0.192 to 0.709: the decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
             ),
         },
         {
@@ -609,7 +615,7 @@ TEMPLATE = {
                 "experiment loads its **own** pipeline from the verified snapshot, so it starts from the frozen model and never "
                 "touches the default `pipe`; it writes only to `outputs/{stem}_experiment/`, prints the default and the changed "
                 "run side by side, and checks that the default exports (adapter, evaluation report, result) are byte-identical "
-                "afterwards. It loads a second copy of the model and trains again: expect about 20 minutes on a T4.\n\n"
+                "afterwards. It loads a second copy of the model and trains again (the default run's eight epochs took 1,103.7 s to 1,129.1 s on a T4 in the recorded runs).\n\n"
                 "**Predict:** with half the learning rate and the same eight epochs, will the held-out CER end higher, lower or "
                 "about the same as the default run's? What should epoch 0 of the experiment show?"
             ),
@@ -650,8 +656,8 @@ TEMPLATE = {
             "md": (
                 "**Observe → Explain.** Compare the `test` columns and the two `best_epoch` values.\n\n"
                 "<details><summary>Check your reasoning</summary>Epoch 0 of the experiment must equal epoch 0 of the default run "
-                "(validation CER 1.600 in the recorded run): both are the frozen model, which is what the restart-from-base rule "
-                "guarantees. No experiment run is recorded yet, so the held-out result is yours to explain. The default run's "
+                "(validation CER 1.600 in the recorded runs): both are the frozen model, which is what the restart-from-base rule "
+                "guarantees. The held-out result is yours to explain. The default run's "
                 "validation CER was still falling at its last epoch, so halving the step size most likely leaves the model "
                 "further from convergence after the same eight epochs — a higher CER — unless the default rate was "
                 "overshooting. With 60 validation and 140 test lines, a difference of a few hundredths is within what a "
@@ -664,13 +670,13 @@ TEMPLATE = {
         "A document-conversion model trained on rendered pages, asked to convert a line of nineteenth-century cursive French, "
         "emits the markup it knows and little of the text: the frozen model scores a character error rate of 1.439 "
         "on the Belfort lines. A bounded fine-tuning of the last eight decoder layers on 600 transcribed lines — with the "
-        "transcript inside the model's own `<text>` element — moves it to 0.782 CER and 0.975 WER in the "
-        "build record (2 of the held-out lines exact), with a 113 MB adapter that reloads line-for-line. That "
+        "transcript inside the model's own `<text>` element — moves it to 0.781–0.782 CER and 0.975 WER across the "
+        "recorded hosted T4 runs (2 of the held-out lines exact), with a 113 MB adapter that reloads line-for-line. That "
         "is the claim: the adaptation contract works end to end on one instruction of a document-conversion model with a "
         "real labelled set, through the model's own output contract, and the numbers it produces are read as micro and macro "
         "rates, against two non-adapted baselines and the frozen model, with the hypothesis length beside them rather than "
-        "in isolation. Read against the three sibling rows on the same split — GOT-OCR 2.0 at 0.759, Florence-2 at 0.797 and "
-        "SmolVLM-500M at 0.890 — SmolDocling's 0.782 lands between GOT-OCR and Florence-2 although it is the smallest of the four models (256M) and started from a frozen position that read nothing; the validation CER was still falling at the last epoch (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point; 7 of 140 lines end under 0.5 CER and 19 above 1.0; and the cost is visible on the report page — after adaptation the same instruction returns 92 tokens instead of 630, the section header and both tables vanish (element counts 1/0, 3/1, 2/0) and the page WER moves 0.192 → 0.709: the tuned decoder learned lines and page structure paid for it, the drift the card names.\n\n"
+        "in isolation. The three sibling rows on the same split (GOT-OCR 2.0, Florence-2, SmolVLM-500M; their numbers are in their own "
+        "repositories and this model card) ran separate fixed recipes, one seeded 140-line split, no paired test and no dispersion estimate, so differences of a few hundredths of CER between them are not a ranking; SmolDocling is the smallest of the four (256M) and started from a frozen position that read nothing; the validation CER was still falling at the last epoch (1.024 → 0.871), so eight epochs are a floor for this recipe, not a converged point; 7 of 140 lines end under 0.5 CER and 19 above 1.0; and the cost is visible on the report page — after adaptation the same instruction returns 92 tokens instead of 630, the section header and both tables vanish (element counts 1/0, 3/1, 2/0) and the page WER moves 0.192 → 0.709: the tuned decoder learned lines and page structure paid for it, the drift the card names.\n\n"
         "The test split is 140 lines from one seeded draw of one 800-line sample, the validation split that picks the epoch is "
         "60, and both rates are corpus edit distances over one crowdsourced transcription of the text the DocTags carry — not "
         "a benchmark, not a measure of layout, reading order or table structure. So a result here says the contract works on "
@@ -710,7 +716,9 @@ TEMPLATE = {
         "GPU.\n"
         "- **You re-ran Section 1 on its own** — nothing is lost: it keeps the running worker and every variable, so the "
         "cells after it keep working. After a session restart, run from the top.\n"
-        "- **No GPU / it is very slow** — the default path needs a CUDA runtime in practice (about 25 minutes on a T4, hours "
+        "- **Where the environment lives** — Section 1 builds it in a folder named `dimer_isolated_env_<lock digest>` in the working "
+        "directory. Set the environment variable `DIMER_ISOLATED_ENV` before Section 1 to build it somewhere else.\n"
+        "- **No GPU / it is very slow** — the default path needs a CUDA runtime in practice (26.5 to 27.2 minutes of session wall on a T4 in the recorded runs, hours "
         "on CPU). Choose **Runtime → Change runtime type → T4 GPU** and run all again.\n"
         "- **`FileNotFoundError: snapshot file missing` or a `sha256`/`size` `ValueError` in Section 3** — a staged file is "
         "incomplete or altered: delete it from the snapshot folder Section 3 prints as `weights_dir` and run Section 3 again "
@@ -719,7 +727,7 @@ TEMPLATE = {
         "unreachable. Run Section 4 again (cached row groups are re-hashed); delete `weights/belfort/` if a cached file is "
         "corrupt.\n"
         "- **CUDA out of memory in Section 7 or 10** — set `BATCH_SIZE = 4` in Section 7 and choose **Run after** from "
-        "Section 7 (the numbers will differ a little from the recorded run).\n"
+        "Section 7 (the numbers may differ from the recorded runs).\n"
         "- **BYOD: \"BYOD_PATH … does not exist\"** — the path is relative to the working directory printed in the "
         "message.\n"
         "- **BYOD: \"the upload dialog exists only in Google Colab\"** — on Kaggle or Jupyter, put the zip in the runtime and "
@@ -767,14 +775,12 @@ TEMPLATE = {
         "- One reason not to trust this number on my own documents yet: ___ (for example shared writers across the split, "
         "the size of the test split, or drift).\n\n"
         "## References\n\n"
-        "- Repository README: https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/README.md\n"
-        "- Repository model card: https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/MODEL_CARD.md\n"
-        "- Weight provenance: https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/docs/WEIGHTS.md\n"
-        "- Upstream model: https://huggingface.co/{MODEL_ID}\n"
-        "- Upstream code: https://github.com/docling-project/docling\n"
-        "- SmolDocling: An ultra-compact vision-language model for end-to-end multi-modal document conversion (Nassar et al., 2025): https://arxiv.org/abs/2503.11576\n"
-        "- Belfort-line dataset (Teklia, MIT): https://huggingface.co/datasets/Teklia/Belfort-line — Tarride et al., Handwritten Text Recognition from Crowdsourced Annotations (HIP 2023): https://doi.org/10.1145/3604951.3605517\n"
-        "- Sibling rows on the same split: https://github.com/kurtvalcorza/got-ocr2-pipeline, https://github.com/kurtvalcorza/florence2-vision-language-pipeline and https://github.com/kurtvalcorza/smolvlm-vision-language-pipeline\n"
-        "- DIMER Notebook Specification 2.2 and Model Card Specification 1.1 (fleet specs in the ml-worker repository)"
+        "[1] A. Nassar *et al.*, \"SmolDocling: An ultra-compact vision-language model for end-to-end multi-modal document conversion,\" arXiv:2503.11576, 2025. [Online]. Available: https://arxiv.org/abs/2503.11576\n\n"
+        "[2] S. Tarride *et al.*, \"Handwritten text recognition from crowdsourced annotations,\" in *Proc. 7th Int. Workshop Historical Document Imaging and Processing (HIP)*, 2023, doi: 10.1145/3604951.3605517. Dataset (Teklia, MIT): https://huggingface.co/datasets/Teklia/Belfort-line\n\n"
+        "[3] Docling Project, \"docling,\" GitHub repository. [Online]. Available: https://github.com/docling-project/docling\n\n"
+        "[4] Upstream model checkpoint. [Online]. Available: https://huggingface.co/{MODEL_ID}\n\n"
+        "[5] K. Valcorza, \"smoldocling-document-extraction-pipeline,\" README, weight provenance and model card. [Online]. Available: https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/README.md, https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/docs/WEIGHTS.md; model card: https://github.com/kurtvalcorza/smoldocling-document-extraction-pipeline/blob/main/MODEL_CARD.md\n\n"
+        "[6] K. Valcorza, sibling rows on the same split. [Online]. Available: https://github.com/kurtvalcorza/got-ocr2-pipeline, https://github.com/kurtvalcorza/florence2-vision-language-pipeline, https://github.com/kurtvalcorza/smolvlm-vision-language-pipeline\n\n"
+        "[7] DIMER Notebook Specification 2.5 and Model Card Specification 1.1, fleet specs in the ml-worker repository."
     ),
 }

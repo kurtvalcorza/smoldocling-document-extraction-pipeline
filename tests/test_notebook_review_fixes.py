@@ -346,4 +346,5 @@ def test_sdl_m3_split_boundary_is_disclosed_in_sections_4_and_8(notebook):
 
 def test_sdl_s4_declares_notebook_spec_2_2():
     nb = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
-    assert nb["metadata"]["dimer"]["notebook_spec"] == "2.2"
+    assert nb["metadata"]["dimer"]["notebook_spec"] == "2.5"
+    assert nb["metadata"]["dimer"]["notebook_kind"] == "TUTORIAL"
