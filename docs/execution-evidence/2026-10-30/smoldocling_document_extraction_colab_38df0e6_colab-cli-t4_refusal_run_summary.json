@@ -1,0 +1,71 @@
+{
+  "repo": "smoldocling-document-extraction-pipeline",
+  "sha": "38df0e66f31de98b6c3969533831c16aafcefbd3",
+  "notebook": "tutorials/smoldocling_document_extraction_colab.ipynb",
+  "blob": "875bdb6aa0d9c54e936f1976318568488d40acb1",
+  "gpu": "T4",
+  "session": "suite-smoldocling-38df0e6-47c4",
+  "started_utc": "2026-10-30T19:50:38+00:00",
+  "runner": "Colab CLI `colab exec -f` on a fresh session (not a browser Run all)",
+  "overrides": [
+    {
+      "name": "USE_BYOD",
+      "from": "False",
+      "to": "True"
+    },
+    {
+      "name": "BYOD_PATH",
+      "from": "''",
+      "to": "'/content/sample_data'"
+    }
+  ],
+  "run_copy_blob": "a8a164c161194ac036f762242250cec3784f4c3b",
+  "run_copy_sha256": "bcce8463a7543a8638c8f9352985b3836bc9415742f0c00741287aee2027a49d",
+  "run_copy_note": "refusal run: the run copy is the committed notebook with the listed assignment overrides, cut immediately after the refusal cell and re-serialised (nbformat layout); input_unchanged compares against that copy",
+  "truncated_after_cell": "smoldocling_document_extraction-16",
+  "refusal_cell_ref": "smoldocling_document_extraction-16",
+  "refusal_cell_index": 7,
+  "cells_dropped": 20,
+  "code_cells_dropped": 6,
+  "original_sha256": "cc8b4cbef26abf30b620f88737f97a800565f221c8c4dbf1d8da3324009aef89",
+  "status": "[suite-smoldocling-38df0e6-47c4] gpu-t4-s-usw1b0-ndcv0kvts241 | Hardware: T4 | Shape: Standard | Variant: GPU | Status: IDLE",
+  "exec_exit_code": 0,
+  "stopped": true,
+  "stop_verified": true,
+  "wall_s": 113.6,
+  "input_unchanged": true,
+  "executed_file": "smoldocling_document_extraction_colab_38df0e6_colab-cli-t4_output.ipynb",
+  "log_cells": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "log_total": 7,
+  "code_cells": 7,
+  "executed_cells": 4,
+  "errors": [
+    {
+      "cell": "smoldocling_document_extraction-16",
+      "ename": "IsolatedCellRefusal",
+      "evalue": "sample_data: BYOD data must include transcripts.csv with the columns file and text; fix the input and run this cell again (the earlier results of this session were removed)."
+    }
+  ],
+  "execution_counts": [],
+  "sequential": null,
+  "executed_sha256": "4397cabb08f613e8a049c4f3cb87febc8d602af42ba47f1899c773bad7266f72",
+  "log_sequential_complete": true,
+  "mode": "expect_refusal",
+  "refusal_line": "Refused: sample_data: BYOD data must include transcripts.csv with the columns file and text; fix the input and run this cell again (the earlier results of this session were removed).",
+  "halting_cell_index": 7,
+  "halting_cell_id": "smoldocling_document_extraction-16",
+  "error_cells": [
+    7
+  ],
+  "refusal_fail_reasons": [],
+  "refusal_ok": true,
+  "verdict": "PASS"
+}
