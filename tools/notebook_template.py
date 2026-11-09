@@ -345,8 +345,10 @@ TEMPLATE = {
                 "text they carry (`doctags_to_text`), `new_tokens` and a `truncated` flag that is true when the budget was "
                 "exhausted — **no score exists** in the markup. `doctags_summary` counts the elements the model claims the page "
                 "has, and `evaluation_report` with the rendered words and counts is `sample-sanity`: a `word_error_rate` and "
-                "one `element_count` entry per tag against references you drew, plumbing evidence for one page (the "
-                "inference-only card recorded 0.19 with both tables cell-perfect); whether the model *reads handwriting* is "
+                "one `element_count` entry per tag against references you drew, plumbing evidence for one page, and its result depends on the exact pixels you drew (with Pillow 11.3 the "
+                "frozen model read both tables cell-perfectly, WER 0.19; the Pillow 13.0 this notebook locks renders 244 of "
+                "the page's 935,000 pixels differently, and the frozen model then runs to its token budget); whether the "
+                "model *reads handwriting* is "
                 "what Section 6 measures on 140 lines with a metric.\n\n"
                 "*Core concept.* **DocTags** is SmolDocling's output markup: each element (`<text>`, `<section_header_level_1>`, an "
                 "`<otsl>` table of cell tokens, …) is preceded by four `<loc_N>` tokens giving its box on a 0–500 grid. The model "
@@ -427,7 +429,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the recorded runs the frozen model used 630 new tokens and got every count right — `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2 — with a page word error rate of 0.192 and the verdict `sample-sanity`. That is a well-converted page, but the counts only show the structure is plausible: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality.</details>'
+                '**What to notice:** the structural checks, `new_tokens` against the budget, the element counts (expected, observed) and the page WER.\n\n<details><summary>Check your reasoning</summary>In the runs recorded under this lock (Pillow 13.0.0), the frozen model ran to the 2048-token budget (`truncated` true): the heading 1/1 and `text` 3/2, but no table (`otsl` 2/0), and a page word error rate of 9.089 (repeated output counts as error), verdict `sample-sanity`. Runs with Pillow 11.3.0, whose rendering of the same page differs in 244 of 935,000 glyph-edge pixels, used 630 new tokens, got every count right and scored 0.192. So the counts and the WER of one drawn page say as much about how fragile greedy decoding is on that rendering as about the model: the WER, against words you rendered yourself, is the only check on the text, and one page you drew is plumbing evidence, not a measurement of conversion quality. The 140-line metric of Section 6 did not change between those runs.</details>'
             ),
         },
         {
@@ -590,7 +592,7 @@ TEMPLATE = {
                 "frozen answer and the adapted answer beneath it) so the numbers can be checked by eye: look whether the adapted rows "
                 "carry the cursive the frozen rows left empty or spaced out. The report page from Section 5 is then converted "
                 "again by the adapted model — the decoder that was tuned answers every instruction, so this is a small look at "
-                "what the adaptation did *outside* its corpus: the recorded runs measured before adaptation 630 new tokens, page WER 0.192, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/3, `otsl` 2/2, verdict `sample-sanity`; after adaptation 92 new tokens, page WER 0.709, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` — one page of "
+                "what the adaptation did *outside* its corpus: the runs recorded under this lock (Pillow 13.0.0) measured before adaptation 2048 new tokens (`truncated`), page WER 9.089, element counts (expected, observed) `section_header_level_1` 1/1, `text` 3/2, `otsl` 2/0; after adaptation 101 new tokens, page WER 0.7, element counts (expected, observed) `section_header_level_1` 1/0, `text` 3/1, `otsl` 2/0, verdict `sample-sanity` (with the Pillow 11.3.0 rendering of the page: 630 tokens and WER 0.192 before, 92 tokens and 0.709 after) — one page of "
                 "evidence, not a measurement.\n\n"
                 "`pipe.save_artifact` writes the trained tensors — the eight decoder layers and the norm, about 113 MB in "
                 "float32 — as `adapter.safetensors`, with a `manifest.json` recording the artifact format, the base model id and "
@@ -656,7 +658,7 @@ TEMPLATE = {
         },
         {
             "md": (
-                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, no: the adapted model answered the same page with 92 new tokens instead of 630, the heading and both tables vanished (element counts 1/0, 3/1, 2/0) and the page WER rose from 0.192 to 0.709: the decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
+                "**What to notice:** the panels in `outputs/{stem}_examples/`, the adapted page's tokens, counts and WER, and `identical_lines` against `of`.\n\n<details><summary>Check your reasoning</summary>In the recorded runs, no: the adapted model answered the same page with 101 new tokens, and the heading and both tables vanished (element counts 1/0, 3/1, 2/0), at a page WER of 0.7. That WER is lower than the frozen 9.089, but it is not a better conversion: the frozen answer ran to its budget with repeated text, and the adapted one dropped the structure (with the Pillow 11.3.0 rendering, 630 tokens and 0.192 became 92 tokens and 0.709). The decoder that was tuned answers every instruction, and it learned to emit one text line. Reload parity held — 8 of 8 identical transcripts — because the adapter carries the trained tensors byte for byte and greedy decoding is deterministic on one device.</details>"
             ),
         },
         {
