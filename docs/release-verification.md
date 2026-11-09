@@ -267,9 +267,66 @@ This run says nothing about the 20 cut cells, which did not run in it.
 
 Not exercised by these runs: an accepted BYOD input (REL12) and a browser `Run all` of the interactive journeys (REL2).
 
+### REL14 hosted runs of blob `9f619f17` (2026-11-09)
+
+These 2 runs executed PR #16's head `38ff9404f19ee811688a526cee42a18733e4cd91` (branch `docs/page-render-sensitivity`, prose commit `200d82c`), notebook `tutorials/smoldocling_document_extraction_colab.ipynb` blob `9f619f17532e38910145f32bf6ab4490f0222b0b`. They ran as Colab CLI 0.7.5 sequential executions (`colab exec -f`; the version is the one installed, not one recorded in `exec.log` or `run_summary.json`) on fresh Colab Tesla T4 VMs (session `suite-smoldocling-38ff940-47c4`), not a browser `Run all`.
+
+The saved notebooks have no execution counts; cell order is taken from `exec.log`. Each `run_summary.json` records the commit and notebook blob above, `verdict` `PASS`, `exec_exit_code` 0, `input_unchanged` true and `stop_verified` true (the VM was released). The SHA-256 of each executed notebook equals the summary's `executed_sha256`. Local paths in the exec logs are redacted byte-wise to `<local-run-dir>`; the notebooks and summaries carried none.
+
+| Date (UTC) | Commit / notebook blob | Executor | Path exercised | Code cells | Wall time | Outcome |
+|---|---|---|---|---:|---:|---|
+| 2026-11-09 06:06 | `38ff940` / `9f619f17` | Colab CLI sequential execution, fresh Colab Tesla T4 | default settings, no overrides | 13/13 | 1679.0 s | **One pass, no restart, 0 errors**; [retained evidence](execution-evidence/2026-11-09/) |
+| 2026-11-09 06:36 | `38ff940` / `9f619f17` | Colab CLI sequential execution, fresh Colab Tesla T4 | scripted DAT20 refusal: `USE_BYOD` `False` → `True` and `BYOD_PATH` `''` → `'/content/sample_data'` | 7/7 of the cut copy | 128.5 s | **Refused as designed**: one `Refused:` line, no traceback, earlier cells clean; [retained evidence](execution-evidence/2026-11-09/) |
+
+**What changed.** Only the Section 5 and Section 9 markdown and the carried source revision changed since `63e42073`. The prose now quotes the drawn-page numbers recorded under the locked Pillow 13.0.0, and the Pillow 11.3.0 numbers as the comparison.
+
+Apart from timings, run ids, process ids and the carried source revision, every frozen-model figure and every split and baseline line equals the 2026-11-03 default run of `63e42073`. That includes the Section 3 drawn page (SHA-256 prefix `f3d55fda631f1ec2`), on which the frozen model again ran to the 2,048-token budget:
+
+```text
+'new_tokens': 2048, 'truncated': True, 'n_elements': 3, 'n_table_cells': 0, 'word_error_rate': 9.089, 'element_counts (expected, observed)': {'section_header_level_1': (1, 1), 'text': (3, 2), 'otsl': (2, 0)}
+```
+
+The adapted page output also equals that run: 101 new tokens, word error rate 0.7, counts 1/0, 3/1, 2/0. These are the numbers the new Section 5 and Section 9 prose quotes.
+
+The adapted side differs only by training noise:
+- adapted test CER 0.782 here, 0.781 then;
+- adapted hypothesis characters 5,225, against 5,214;
+- the adapter SHA-256 prefix, at the same tensor count (73) and byte size (113,294,224).
+
+Adapted test WER 0.975, best epoch 8 and reload parity 8/8 are unchanged.
+
+**Cause of the 2026-11-03 drawn-page change (established 2026-11-09).** The `pillow` 11.3.0 → 13.0.0 lock upgrade (commit `17fc4f4`) moved the bundled FreeType from 2.13.3 to 2.14.3. `ImageFont.load_default(size=…)` therefore antialiases glyphs differently, and the synthetic page changed in 244 of its 935,000 pixels, all at glyph edges. The ink-pixel count is the same.
+
+The verbatim `synthetic_page` function, run offline on Python 3.12 without the model, reproduces both recorded SHA-256 prefixes exactly: `e57ef5522f7ee4cd` with `pillow==11.3.0` and `f3d55fda631f1ec2` with `pillow==13.0.0`. On the new rendering, the frozen model's greedy decode runs to its budget. The 140-line handwriting metrics did not change. This is a property of a one-page sanity check, not a regression of the pipeline.
+
+**DAT20 refusal record (2026-11-09).** Overrides, set by `--set` on a copy of the blob: `USE_BYOD` `False` → `True` and `BYOD_PATH` `''` → `'/content/sample_data'`. The suite cut the run copy right after the refusing cell `smoldocling_document_extraction-16`, dropping 20 cells (6 of them code cells). This reproduces `Run all` stopping at the first error. The cut copy is `run_copy.ipynb`, SHA-256 `90b358b4ef43f14e6f8802723c31f6adfc38ded5902a43a70215eb6c5814266d` (Git blob `a8629c6e`), equal to the summary's `run_copy_sha256`.
+
+The 6 earlier code cells completed without an error. The refusing cell halted with `ename` `IsolatedCellRefusal` and printed exactly one `Refused:` line, with no traceback:
+
+```text
+Refused: sample_data: BYOD data must include transcripts.csv with the columns file and text; fix the input and run this cell again (the earlier results of this session were removed).
+```
+
+This run says nothing about the 20 cut cells, which did not run in it.
+
+| File (under `docs/execution-evidence/2026-11-09/`) | Captured SHA-256 | Committed SHA-256 |
+|---|---|---|
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_default.ipynb` | `2b02fff413bb281f5bae5e45a461d623b24dc53399ca61c89025d4fcc841401f` | `2b02fff413bb281f5bae5e45a461d623b24dc53399ca61c89025d4fcc841401f` (unchanged, no local path) |
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_default_exec.log` | `1934f4f2698041075440b9110a19a25d9ad42d86de18678e94032c4912b0d5bc` | `7aba75c365cbf53700f7328de3b6fc946c16da5406f38486f2e74979a1b84865` (2 local-path replacements) |
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_default_run_summary.json` | `1311c76d2435ab9a0f5e23f0776efb12bfcedc2cb73068ee29366ca29049a714` | `1311c76d2435ab9a0f5e23f0776efb12bfcedc2cb73068ee29366ca29049a714` (unchanged, no local path) |
+
+| File (under `docs/execution-evidence/2026-11-09/`) | Captured SHA-256 | Committed SHA-256 |
+|---|---|---|
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_refusal.ipynb` | `35b86cdc4c6916361653dd90059282c86201413c239bb91bb4a8533ba9ec66c2` | `35b86cdc4c6916361653dd90059282c86201413c239bb91bb4a8533ba9ec66c2` (unchanged, no local path) |
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_refusal_exec.log` | `a8328af030506b27194121e2c48ca7ea058bf6dde50b6800347566bd28242bf1` | `522726e989c8b30ce3bd04d9445bcf1bb45bde4c509ad72b7e55b06691d3f711` (2 local-path replacements) |
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_refusal_run_summary.json` | `8020a9002227654b55c1718a727292c3a133c0854cdbbcf18d2774518ea9f0af` | `8020a9002227654b55c1718a727292c3a133c0854cdbbcf18d2774518ea9f0af` (unchanged, no local path) |
+| `smoldocling_document_extraction_colab_38ff940_colab-cli-t4_refusal_run_copy.ipynb` | `90b358b4ef43f14e6f8802723c31f6adfc38ded5902a43a70215eb6c5814266d` | `90b358b4ef43f14e6f8802723c31f6adfc38ded5902a43a70215eb6c5814266d` (unchanged, no local path) |
+
+Not exercised by these runs: an accepted BYOD input (REL12) and a browser `Run all` of the interactive journeys (REL2).
+
 ## Current status
 
-**Candidate — REL14 (2026-11-03):** the current blob `63e42073` (`main` at `0aa6095`: the lock upgrades of PRs #12 and #14 (pillow 13) and PR #13, which narrowed the Section 4 BYOD catches to input errors only) passed on a hosted Colab T4 on 2026-11-03: its default path (13/13 code cells, one pass, no restart, 0 errors) and its scripted DAT20 refusal (exactly one `Refused:` line at cell `smoldocling_document_extraction-16`, no traceback, earlier cells clean, VM released); REL14 for this blob. The remaining gates for this blob are REL12 (a hosted BYOD run with one accepted and one refused input), REL2 (a browser `Run all`) and the optional experiment. 
+**Candidate — REL14 (2026-11-09):** the current blob `9f619f17` (committed at `38ff940`; its prose commit `200d82c` quotes the Section 5 and 9 drawn-page numbers recorded under the locked Pillow 13.0.0) passed on a hosted Colab T4 on 2026-11-09: its default path (13/13 code cells, one pass, no restart, 0 errors; the drawn-page numbers equal those the prose quotes) and its scripted DAT20 refusal (exactly one `Refused:` line at cell `smoldocling_document_extraction-16`, no traceback, earlier cells clean, VM released); REL14 for this blob. The remaining gates for this blob are REL12 (a hosted BYOD run with one accepted and one refused input), REL2 (a browser `Run all`) and the optional experiment. Blob `63e42073` (`main` at `0aa6095`: the lock upgrades of PRs #12 and #14 (pillow 13) and PR #13, which narrowed the Section 4 BYOD catches to input errors only), the current blob on 2026-11-03 and history now (REL14), passed the same default path and scripted refusal on 2026-11-03; the drawn-page change seen in that run is caused by the Pillow 13 font renderer (see `docs/release-verification.md`). 
 
 **DAT20 refusal display (2026-10-26; history, REL14):** Blob `875bdb6a` (code commit `4e2c04a`), which was the current blob on 2026-10-30 and is history now (REL14), shows a refused BYOD input as one `Refused: <file>: <reason>` line with no traceback, removes the earlier run's results from the session and this notebook's exports from `outputs/`, and stops Run all at that cell, while genuine failures keep their traceback (NOTEBOOK_SPEC DAT19/DAT20); its default path (2026-10-30; 13 code cells, exit 0, 0 errors) and its scripted DAT20 refusal (2026-10-30; `USE_BYOD=True;BYOD_PATH=/content/sample_data`: exactly one `Refused:` line at cell `smoldocling_document_extraction-16`, no traceback, earlier cells clean, VM released) both passed on a hosted Colab Tesla T4 (Colab CLI `colab exec -f`, not a browser `Run all`), and the hosted runs of earlier blobs, including the 2026-10-25 run of `4706aa88ff88`, are history for it (REL14). The status below is history.
 
